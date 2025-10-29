@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>재치만점 MZ MBTI 테스트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Jua', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #FFB347, #FFCC33);
+        }
+        .content-box {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-answer {
+            transition: all 0.3s ease;
+        }
+        .btn-answer:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="w-full max-w-lg mx-auto">
+        <!-- 시작 화면 -->
+        <div id="start-screen" class="text-center p-8 rounded-2xl shadow-2xl content-box">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">나 혹시... OO인가?</h1>
+            <p class="text-lg text-gray-600 mb-8">알잘딱깔센! 킹정 받는<br>나의 진짜 성향 알아보기</p>
+            <div class="text-5xl mb-8">🤔✨🤪</div>
+            <button onclick="startTest()" class="w-full bg-orange-500 text-white font-bold py-4 px-6 rounded-xl text-2xl hover:bg-orange-600 transition-all duration-300 shadow-lg">
+                테스트 시작!
+            </button>
+        </div>
+
+        <!-- 질문 화면 -->
+        <div id="question-screen" class="hidden">
+            <div class="w-full h-4 bg-gray-200 rounded-full mb-6">
+                <div id="progress-bar" class="h-4 bg-orange-400 rounded-full transition-all duration-500" style="width: 0%;"></div>
+            </div>
+            <div class="p-8 rounded-2xl shadow-2xl content-box">
+                <p id="question-number" class="text-orange-500 font-bold text-xl mb-2"></p>
+                <h2 id="question-text" class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 leading-snug"></h2>
+                <div id="answer-buttons" class="space-y-4">
+                    <!-- 답변 버튼들이 동적으로 추가될 영역 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div id="result-screen" class="hidden text-center p-8 rounded-2xl shadow-2xl content-box">
+            <p class="text-xl text-gray-600 mb-2">당신의 MBTI는 바로...</p>
+            <h1 id="mbti-type" class="text-5xl md:text-6xl font-extrabold text-orange-500 mb-4"></h1>
+            <p id="mbti-title" class="text-2xl font-bold text-gray-800 mb-4"></p>
+            <div class="bg-orange-100 p-4 rounded-lg my-6">
+                <p id="mbti-description" class="text-gray-700 text-base md:text-lg leading-relaxed"></p>
+            </div>
+            
+            <div class="flex justify-around text-center my-6">
+                <div>
+                    <h3 class="font-bold text-lg text-green-600 mb-2">💚 찰떡궁합 💚</h3>
+                    <p id="good-match" class="text-xl font-bold"></p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-red-600 mb-2">💔 환장궁합 💔</h3>
+                    <p id="bad-match" class="text-xl font-bold"></p>
+                </div>
+            </div>
+
+            <button onclick="restartTest()" class="w-full bg-gray-700 text-white font-bold py-3 px-6 rounded-xl text-xl hover:bg-gray-800 transition-all duration-300 shadow-lg mt-4">
+                테스트 다시하기
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "띵동! 주말이 왔습니다. 나는?", choices: [{ text: "일단 약속부터 잡음. 이번 주 핫플 어디?", type: "E" }, { text: "침대 위가 내 파라다이스. 폰만 있으면 돼", type: "I" }] },
+            { question: "친구가 '나 요즘 개빡치는 일 있음' 시전", choices: [{ text: "'왜? 뭔데? 말해봐' 일단 상황 분석부터", type: "T" }, { text: "'헐.. 어떡해ㅠㅠ' 친구 기분부터 살핌", type: "F" }] },
+            { question: "새로운 맛집에 갔는데 웨이팅 1시간..", choices: [{ text: "맛집 어플 켜서 주변 다른 맛집 평점 스캔", type: "J" }, { text: "기다리면서 뭐 할지 생각. 일단 기다려봄", type: "P" }] },
+            { question: "친구가 '야, 저 구름 좀 봐. 토끼 같지 않아?'", choices: [{ text: "'음.. 그냥 수증기 덩어리..?'", type: "S" }, { text: "'헐 진짜네! 저 옆은 거북이 같아!' 상상력 풀가동", type: "N" }] },
+            { question: "단톡방에서 갑자기 분위기 싸해짐. 이때 나는?", choices: [{ text: "일단 웃긴 짤이라도 올려서 분위기 전환 시도", type: "E" }, { text: "누가 말 꺼낼 때까지 조용히 관망", type: "I" }] },
+            { question: "친구가 '너 T발 C야?' 라고 물어봤을 때", choices: [{ text: "'내가 T인건 맞는데 C는 뭔데?'", type: "T" }, { text: "'헐.. 나 상처받음. 너 지금 나한테 뭐라고 한거야?'", type: "F" }] },
+            { question: "여행 계획을 짤 때 나의 모습은?", choices: [{ text: "분 단위 엑셀 시트 필수. 파워 J의 자존심", type: "J" }, { text: "비행기 표만 끊으면 그게 계획의 90% 아님?", type: "P" }] },
+            { question: "새로 산 가구 조립 설명서를 볼 때", choices: [{ text: "1번부터 정독하며 차근차근 따라 함", type: "S" }, { text: "대충 그림만 보고 감으로 때려 맞춤", type: "N" }] },
+            { question: "모르는 번호로 전화가 올 때", choices: [{ text: "일단 받음. '여보세요?'", type: "E" }, { text: "심장 두근거림. 검색 전까지 절대 안 받음", type: "I" }] },
+            { question: "요즘 유행하는 챌린지 영상을 봤을 때", choices: [{ text: "재밌겠다! 바로 각 잡고 찍을 준비함", type: "S" }, { text: "이 챌린지는 왜 유행일까? 사회적 의미 분석 시작", type: "N" }] },
+            { question: "친구가 약속시간 30분 늦음", choices: [{ text: "왜 늦었는지, 오는 데 얼마나 걸리는지 물어봄", type: "T" }, { text: "오는 길에 무슨 일 있었나 걱정부터 됨", type: "F" }] },
+            { question: "내일 당장 좀비 아포칼립스가 시작된다면?", choices: [{ text: "비상식량, 동선부터 짜는 K-생존 전문가", type: "J" }, { text: "일단 오늘 마지막 만찬을 즐기고 생각함", type: "P" }] }
+        ];
+
+        const results = {
+            "ISTJ": { title: "팩트 폭격기 로봇", description: "세상의 소금과 빛... 이라기엔 너무 뻣뻣해요. 계획에 없던 일은 극혐하고, 팩트로 친구들 눈물 쏙 빼는 재주가 있어요. 그래도 이 사람한테 일 맡기면 무조건 성공!", good: "ENFP", bad: "INFP" },
+            "ISFJ": { title: "수줍은 벼락치기생", description: "남 눈치 보느라 내 인생은 뒷전... 거절 못해서 일은 쌓여만 가고 마감 전날 밤새는 게 일상. 하지만 내 사람한테는 누구보다 따뜻한 츤데레 끝판왕.", good: "ESFP", bad: "INFP" },
+            "INFJ": { title: "속을 알 수 없는 예언가", description: "사람들 속마음 다 보이는데 모르는 척 하는 거 좀 힘들죠? 머릿속에선 이미 인류의 미래까지 걱정 중. 가끔 너무 이상주의적이라 현실감 없어 보일 때도 있어요.", good: "ENFP", bad: "ISFP" },
+            "INTJ": { title: "AI인 척하는 야망가", description: "세상에서 내가 제일 잘난 줄 알아요. (실제로 잘남) 비효율적인 거 절대 못 참고, 친구의 감성팔이도 논리로 반박해버려요. 사실 속은 외로운 야망가.", good: "ENTP", bad: "ISFP" },
+            "ISTP": { title: "만능 해결사 귀차니스트", description: "세상만사 다 귀찮은데, 막상 시키면 또 다 잘해요. 꽂히는 거 생기면 장비부터 풀세트로 지름. 근데 3일 뒤엔 방구석 어딘가에...", good: "ESFJ", bad: "INFJ" },
+            "ISFP": { title: "평화주의자 예술가", description: "경쟁? 싸움? 그런 거 왜 해요? 세상은 아름답고 인생은 즐거운 건데! 갈등 상황에선 조용히 사라지는 스킬 만렙. 겉으론 순둥해도 속엔 고집이 황소고집.", good: "ENFJ", bad: "INTJ" },
+            "INFP": { title: "망상 회로 풀가동 중", description: "현실보다 머릿속이 더 바빠요. 겉으론 '아무 생각 없어요' 표정이지만, 속으로는 이미 소설 100편 씀. 근데 또 누가 말 걸면 TMI 대방출하는 은근 관종.", good: "ENTJ", bad: "ISTJ" },
+            "INTP": { title: "게으른 천재 발명가", description: "진지하게 세상은 시뮬레이션 아닐까 고민해요. 흥미로운 주제 생기면 밤새 나무위키 탐방 가능. 근데 방 청소는 1년째 미루는 중.", good: "ENTJ", bad: "ESFJ" },
+            "ESTP": { title: "브레이크 고장 난 불도저", description: "일단 지르고 생각해요. 스릴과 자극이 인생의 활력소! 오늘만 사는 것처럼 보이지만, 사실 누구보다 현실 파악이 빠른 생존 전문가.", good: "ISFJ", bad: "INFJ" },
+            "ESFP": { title: "자체발광 핵인싸", description: "주인공이 아니면 무대라도 찢는 파워 관종. 분위기 메이커 역할에 은근한 자부심을 느껴요. 하지만 깊은 얘기는 어색해서 슬쩍 자리를 피해요.", good: "ISFJ", bad: "INTJ" },
+            "ENFP": { title: "에너자이저 댕댕이", description: "사람 좋아! 파티 좋아! 재밌는 거 최고! 5분 전에 꽂힌 거랑 5분 후에 꽂히는 게 달라요. 아이디어는 넘치는데 마무리가 약한 건 비밀.", good: "INFJ", bad: "ISTJ" },
+            "ENTP": { title: "세상을 향한 유쾌한 반항아", description: "굳이? 이걸 왜? 라는 말을 입에 달고 살아요. 남들 다 '예' 할 때 '아니오' 외치는 걸 즐기는 토론 마스터. 어그로 끌기 장인이지만 미워할 수 없는 매력의 소유자.", good: "INFJ", bad: "ISFJ" },
+            "ESTJ": { title: "걸어 다니는 인간 규정집", description: "내 말이 법이고 내 말이 진리. 일 못하는 사람 보면 혈압부터 올라요. 꼰대 같다는 말 자주 듣지만, 사실 조직에 꼭 필요한 현실주의 리더.", good: "ISFP", bad: "INFP" },
+            "ESFJ": { title: "오지랖 넓은 파티 플래너", description: "친구 생일, 기념일은 나한테 맡겨! 주변 사람 챙기는 게 인생의 낙. 가끔 선 넘는 오지랖으로 부담을 주지만, 악의는 1도 없는 프로 챙김러.", good: "ISFP", bad: "INTP" },
+            "ENFJ": { title: "따뜻한 카리스마 리더", description: "사람들을 이끄는 것에 타고난 재능이 있어요. 정의롭고 따뜻해서 주변에 늘 사람이 모여들죠. 하지만 모든 사람에게 사랑받고 싶어 하는 욕심에 가끔 번아웃이 와요.", good: "INFP", bad: "ISTP" },
+            "ENTJ": { title: "목표를 향해 돌진하는 사령관", description: "인생은 한 판의 게임! 무조건 이겨야 해요. 비전과 야망으로 똘똘 뭉친 리더. 감성적인 위로보단 현실적인 해결책을 제시하는 게 이 사람의 애정 표현.", good: "INFP", bad: "ISFP" }
+        };
+
+        let currentQuestionIndex = 0;
+        let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+        const startScreen = document.getElementById('start-screen');
+        const questionScreen = document.getElementById('question-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const progressBar = document.getElementById('progress-bar');
+        const questionNumber = document.getElementById('question-number');
+        const questionText = document.getElementById('question-text');
+        const answerButtons = document.getElementById('answer-buttons');
+
+        function startTest() {
+            startScreen.classList.add('hidden');
+            questionScreen.classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            const progress = ((currentQuestionIndex) / questions.length) * 100;
+
+            progressBar.style.width = `${progress}%`;
+            questionNumber.textContent = `Q${currentQuestionIndex + 1}.`;
+            questionText.textContent = currentQuestion.question;
+
+            answerButtons.innerHTML = '';
+            currentQuestion.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.innerHTML = choice.text;
+                button.className = "w-full text-left p-4 rounded-xl border-2 border-orange-200 bg-white text-gray-700 font-semibold text-lg btn-answer";
+                button.onclick = () => selectAnswer(choice.type);
+                answerButtons.appendChild(button);
+            });
+        }
+
+        function selectAnswer(type) {
+            scores[type]++;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+        
+        function showResult() {
+            progressBar.style.width = '100%';
+
+            let mbti = "";
+            mbti += scores.E > scores.I ? "E" : "I";
+            mbti += scores.S > scores.N ? "S" : "N";
+            mbti += scores.T > scores.F ? "T" : "F";
+            mbti += scores.J > scores.P ? "P" : "J";
+
+            const resultData = results[mbti];
+            
+            document.getElementById('mbti-type').textContent = mbti;
+            document.getElementById('mbti-title').textContent = resultData.title;
+            document.getElementById('mbti-description').textContent = resultData.description;
+            document.getElementById('good-match').textContent = resultData.good;
+            document.getElementById('bad-match').textContent = resultData.bad;
+
+            questionScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        }
+
+        function restartTest() {
+            currentQuestionIndex = 0;
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
