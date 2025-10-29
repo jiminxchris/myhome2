@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>박지민의 코딩 포트폴리오</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide-react@latest/dist/lucide-react.js"></script>
+    <!-- React -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+      // Lucide 아이콘 코드를 DOMContentLoaded 이벤트 핸들러 안으로 이동
+      document.addEventListener('DOMContentLoaded', () => {
+        // lucide 객체가 로드된 후 비구조화 할당 실행
+        const { Sun, Moon, Menu, X, Github, Mail, Send } = lucide;
+
+        // 아이콘 렌더링 함수
+        function renderIcon(icon, selector) {
+          const IconComponent = icon;
+          const container = document.getElementById(selector);
+          if (container) {
+            ReactDOM.render(<IconComponent className="w-5 h-5" />, container);
+          }
+        }
+        
+        // 아이콘 렌더링 (DOM 로드 후)
+        renderIcon(Sun, 'icon-sun');
+        renderIcon(Moon, 'icon-moon');
+        renderIcon(Menu, 'icon-menu');
+        renderIcon(X, 'icon-x');
+        renderIcon(Github, 'icon-github');
+        renderIcon(Mail, 'icon-mail');
+        renderIcon(Send, 'icon-send');
+      });
+    </script>
+    
+    <style>
+        /* Inter 폰트를 기본으로, Noto Sans KR을 한글 폰트로 사용 */
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        }
+        /* 타이핑 커서 애니메이션 */
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.2em;
+            background-color: #3b82f6; /* blue-500 */
+            animation: blink 0.7s infinite;
+            margin-left: 4px;
+            transform: translateY(3px);
+        }
+        .dark .typing-cursor {
+            background-color: #60a5fa; /* blue-400 */
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+    <script>
+        // 다크 모드 설정
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        function toggleTheme() {
+            if (localStorage.theme === 'dark') {
+                localStorage.theme = 'light';
+                document.documentElement.classList.remove('dark');
+            } else {
+                localStorage.theme = 'dark';
+                document.documentElement.classList.add('dark');
+            }
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
+
+    <!-- ==== 헤더 (Header) ==== -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-md">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <!-- 로고/이름 -->
+            <a href="#" class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                Jimin's 1st Portfolio
+            </a>
+            
+            <!-- 데스크탑 메뉴 -->
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#home" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">홈</a>
+                <a href="#about" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">소개</a>
+                <a href="#projects" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">프로젝트</a>
+                <a href="#contact" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">연락처</a>
+                
+                <!-- 다크 모드 토글 버튼 -->
+                <button id="theme-toggle" onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <span id="icon-sun" class="dark:hidden"></span>
+                    <span id="icon-moon" class="hidden dark:inline"></span>
+                </button>
+            </div>
+            
+            <!-- 모바일 메뉴 버튼 -->
+            <div class="md:hidden flex items-center">
+                <button id="theme-toggle-mobile" onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors mr-2">
+                    <span id="icon-sun-mobile" class="dark:hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    </span>
+                    <span id="icon-moon-mobile" class="hidden dark:inline">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </span>
+                </button>
+                <button id="mobile-menu-button" class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <span id="icon-menu"></span>
+                    <!-- 'class_name'을 'class'로 수정 -->
+                    <span id="icon-x" class="hidden"></span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- 모바일 메뉴 (숨겨진 상태) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-900 px-6 pb-4 border-t border-gray-200 dark:border-gray-700">
+            <a href="#home" class="nav-link-mobile block py-2 text-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">홈</a>
+            <a href="#about" class="nav-link-mobile block py-2 text-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">소개</a>
+            <a href="#projects" class="nav-link-mobile block py-2 text-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">프로젝트</a>
+            <a href="#contact" class="nav-link-mobile block py-2 text-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">연락처</a>
+        </div>
+    </header>
+
+    <!-- ==== 메인 컨텐츠 ==== -->
+    <main class="container mx-auto px-6 pt-24">
+
+        <!-- ==== 1. 홈 (Hero) 섹션 ==== -->
+        <section id="home" class="min-h-[calc(100vh-6rem)] flex items-center">
+            <div class="w-full">
+                <div class="text-left">
+                    <span class="text-xl md:text-2xl font-medium text-blue-600 dark:text-blue-400">
+                        명신여자고등학교 1학년
+                    </span>
+                    <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold mt-2 text-gray-900 dark:text-white">
+                        안녕하세요,
+                        <br class="hidden sm:block">
+                        <span class="text-blue-600 dark:text-blue-400">박지민</span>입니다.
+                    </h1>
+                    <p class="text-xl md:text-3xl mt-6 text-gray-600 dark:text-gray-300 h-10 md:h-12">
+                        저는 <span id="typing-text" class="font-semibold text-gray-800 dark:text-gray-100"></span><span class="typing-cursor"></span>
+                    </p>
+                    <a href="#projects" class="nav-link mt-12 inline-block bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:-translate-y-1">
+                        내 프로젝트 보기
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==== 2. 소개 (About) 섹션 ==== -->
+        <section id="about" class="py-24">
+            <h2 class="text-4xl font-bold text-center mb-4 text-gray-900 dark:text-white">저를 소개합니다</h2>
+            <p class="text-lg text-center text-gray-600 dark:text-gray-400 mb-16 max-w-3xl mx-auto">
+                코딩의 매력에 푹 빠져있는 명신여고 1학년 학생입니다. 
+                아이디어를 현실로 만드는 과정이 즐거워, 매일 새로운 것을 배우며 저만의 앱과 챗봇을 만들고 있습니다.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- 스킬 카드 1 -->
+                <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-xl shadow-md transform hover:scale-105 transition-transform duration-300">
+                    <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full flex items-center justify-center mb-6">
+                        <!-- 웹 아이콘 -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 10-1.81-1.81a.5.5 0 0 1 .36-1.04H17a1 1 0 0 1 1 1v7.45a.5.5 0 0 1-1.04.36L14 14"/><path d="M14 14 3.03 3.03"/></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-900 dark:text-white">웹 프론트엔드</h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        HTML, CSS, JavaScript를 다룰 수 있습니다. React와 Tailwind CSS를 사용해 반응형 웹 앱을 만드는 것을 좋아합니다.
+                    </p>
+                </div>
+                <!-- 스킬 카드 2 -->
+                <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-xl shadow-md transform hover:scale-105 transition-transform duration-300">
+                    <div class="w-16 h-16 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 rounded-full flex items-center justify-center mb-6">
+                        <!-- 챗봇 아이콘 -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-900 dark:text-white">챗봇 개발</h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Python과 챗봇 프레임워크를 이용해 유용한 챗봇을 만듭니다. 학교 생활에 도움이 되는 봇을 구상 중입니다.
+                    </p>
+                </div>
+                <!-- 스킬 카드 3 -->
+                <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-xl shadow-md transform hover:scale-105 transition-transform duration-300">
+                    <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full flex items-center justify-center mb-6">
+                        <!-- 앱 아이콘 -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-900 dark:text-white">앱 개발</h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Flutter나 React Native 같은 크로스플랫폼 프레임워크에 관심이 많습니다. 저만의 앱을 출시하는 것이 목표입니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==== 3. 프로젝트 (Projects) 섹션 ==== -->
+        <section id="projects" class="py-24 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+            <h2 class="text-4xl font-bold text-center mb-16 text-gray-900 dark:text-white">제 작품들입니다</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- 프로젝트 카드 1 (목업) -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transform hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                    <img src="https://placehold.co/600x400/3b82f6/ffffff?text=급식+알리미+챗봇&font=noto_sans_kr" alt="프로젝트 1 이미지" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-3 text-gray-900 dark:text-white">학교 급식 알리미 챗봇</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            매일 아침 그날의 급식 메뉴를 알려주는 간단한 챗봇입니다. (구상 중)
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium px-3 py-1 rounded-full">챗봇</span>
+                            <span class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 text-xs font-medium px-3 py-1 rounded-full">Python</span>
+                        </div>
+                        <a href="#" class="inline-flex items-center font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                            GitHub에서 보기
+                            <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 프로젝트 카드 2 (목업) -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transform hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                    <img src="https://placehold.co/600x400/10b981/ffffff?text=나만의+포트폴리오&font=noto_sans_kr" alt="프로젝트 2 이미지" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-3 text-gray-900 dark:text-white">개인 포트폴리오 웹</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            지금 보고 계신 이 웹페이지입니다. Tailwind CSS를 사용해 반응형으로 만들었습니다.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs font-medium px-3 py-1 rounded-full">웹</span>
+                            <span class="bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200 text-xs font-medium px-3 py-1 rounded-full">Tailwind</span>
+                            <span class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 text-xs font-medium px-3 py-1 rounded-full">JS</span>
+                        </div>
+                        <a href="#" class="inline-flex items-center font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                            GitHub에서 보기
+                            <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 프로젝트 카드 3 (목업) -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transform hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                    <img src="https://placehold.co/600x400/8b5cf6/ffffff?text=MBTI+App&font=noto_sans_kr" alt="프로젝트 3 이미지" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-3 text-gray-900 dark:text-white">MBTI앱</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            공부 시간을 기록하고 계획을 관리할 수 있는 간단한 모바일 앱입니다. (개발 예정)
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-xs font-medium px-3 py-1 rounded-full">앱</span>
+                            <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium px-3 py-1 rounded-full">Flutter</span>
+                        </div>
+                        <a href="#" class="inline-flex items-center font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                            GitHub에서 보기
+                            <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==== 4. 연락처 (Contact) 섹션 ==== -->
+        <section id="contact" class="py-24 text-center">
+            <h2 class="text-4xl font-bold text-center mb-4 text-gray-900 dark:text-white">함께 이야기해요!</h2>
+            <p class="text-lg text-center text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
+                코딩에 대한 이야기, 새로운 아이디어, 또는 학교 생활에 대한 이야기 등 무엇이든 환영합니다.
+                <br>편하게 연락주세요!
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+                <a href="mailto:student@mgs.hs.kr" class="flex items-center justify-center w-full sm:w-auto bg-blue-600 text-white font-medium px-8 py-4 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:-translate-y-1">
+                    <span id="icon-mail" class="mr-2"></span>
+                    이메일 보내기
+                </a>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full sm:w-auto bg-gray-800 text-white dark:bg-gray-700 dark:hover:bg-gray-600 font-medium px-8 py-4 rounded-lg shadow-md hover:bg-gray-900 transition-all duration-300 transform hover:-translate-y-1">
+                    <span id="icon-github" class="mr-2"></span>
+                    GitHub 방문하기
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==== 풋터 (Footer) ==== -->
+    <footer class="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-8">
+        <div class="container mx-auto px-6 text-center text-gray-600 dark:text-gray-400">
+            &copy; 2025 명신여자고등학교 1학년 [박지민]. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ==== 모바일 메뉴 토글 ====
+            const menuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const iconMenu = document.getElementById('icon-menu');
+            const iconX = document.getElementById('icon-x');
+            
+            // Lucide 아이콘이 렌더링될 때까지 잠시 대기
+            setTimeout(() => {
+                const iconMenuSvg = menuButton.querySelector('svg:first-child');
+                const iconXSvg = menuButton.querySelector('svg:last-child');
+                
+                if (iconMenuSvg && iconXSvg) {
+                   iconXSvg.style.display = 'none'; // 초기 X 아이콘 숨기기
+                }
+
+                menuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    if (iconMenuSvg && iconXSvg) {
+                        if (mobileMenu.classList.contains('hidden')) {
+                            iconMenuSvg.style.display = 'block';
+                            iconXSvg.style.display = 'none';
+                        } else {
+                            iconMenuSvg.style.display = 'none';
+                            iconXSvg.style.display = 'block';
+                        }
+                    }
+                });
+            }, 200); // 아이콘 렌더링 시간 확보
+
+            // ==== 부드러운 스크롤 ====
+            document.querySelectorAll('a.nav-link, a.nav-link-mobile').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+
+                    // 모바일 메뉴 닫기
+                    if (mobileMenu.classList.contains('hidden') === false) {
+                        mobileMenu.classList.add('hidden');
+                        const iconMenuSvg = menuButton.querySelector('svg:first-child');
+                        const iconXSvg = menuButton.querySelector('svg:last-child');
+                        if (iconMenuSvg && iconXSvg) {
+                            iconMenuSvg.style.display = 'block';
+                            iconXSvg.style.display = 'none';
+                        }
+                    }
+                });
+            });
+
+            // ==== 타이핑 효과 ====
+            const typingText = document.getElementById('typing-text');
+            const phrases = [
+                "세상을 바꾸는 앱을 만듭니다.",
+                "똑똑한 챗봇을 개발합니다.",
+                "새로운 기술을 탐구합니다.",
+                "문제를 해결하는 코드를 짭니다."
+            ];
+            let phraseIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+
+            function type() {
+                const currentPhrase = phrases[phraseIndex];
+                let displayText = '';
+
+                if (isDeleting) {
+                    // 글자 지우기
+                    displayText = currentPhrase.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    // 글자 쓰기
+                    displayText = currentPhrase.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+
+                typingText.textContent = displayText;
+
+                let typeSpeed = isDeleting ? 75 : 150;
+
+                if (!isDeleting && charIndex === currentPhrase.length) {
+                    // 단어 다 씀 -> 잠시 대기 후 지우기 시작
+                    typeSpeed = 2000;
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    // 단어 다 지움 -> 다음 단어로 이동
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    typeSpeed = 500;
+                }
+
+                setTimeout(type, typeSpeed);
+            }
+
+            type(); // 타이핑 애니메이션 시작
+        });
+    </script>
+</body>
+</html>
+
