@@ -3,3 +3,5 @@
 
 - MBTI 앱: 
 https://jiminxchris.github.io/myhome2/mbti.html
+- QR 앱:
+https://jiminxchris.github.io/myhome2/qr.html
