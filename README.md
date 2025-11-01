@@ -7,3 +7,5 @@ https://jiminxchris.github.io/myhome2/
 https://jiminxchris.github.io/myhome2/mbti.html
 - QR 앱:
 https://jiminxchris.github.io/myhome2/qr.html
+- 나의 도서관 챗봇:
+https://chris-librarychatbot.streamlit.app/
